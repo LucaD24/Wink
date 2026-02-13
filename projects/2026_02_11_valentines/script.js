@@ -175,26 +175,8 @@ const fallbackContent = {
       },
       {
         "image": "assets/images/slideshow/SlideShow_19.HEIC",
-        "caption": "",
-        "alt": "Romantic placeholder image 19",
-        "fitMode": "contain",
-        "focusX": 50,
-        "focusY": 35,
-        "zoom": 0.95
-      },
-      {
-        "image": "assets/images/slideshow/SlideShow_20.HEIC",
-        "caption": "",
-        "alt": "Romantic placeholder image 20",
-        "fitMode": "contain",
-        "focusX": 50,
-        "focusY": 35,
-        "zoom": 0.95
-      },
-      {
-        "image": "assets/images/slideshow/SlideShow_21.DNG",
         "caption": "Now press the button, I have a question for you",
-        "alt": "Romantic placeholder image 21",
+        "alt": "Romantic placeholder image 19",
         "fitMode": "contain",
         "focusX": 50,
         "focusY": 35,
