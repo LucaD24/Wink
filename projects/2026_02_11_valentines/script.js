@@ -48,7 +48,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_5.jpeg",
+        "image": "assets/images/slideshow/SlideShow_5.jpg",
         "caption": "I am grateful for you, always",
         "alt": "Romantic placeholder image 05",
         "fitMode": "contain",
@@ -57,7 +57,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_6.jpeg",
+        "image": "assets/images/slideshow/SlideShow_6.jpg",
         "caption": "You are my favourite person and my safest place",
         "alt": "Romantic placeholder image 06",
         "fitMode": "contain",
@@ -66,7 +66,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/Slideshow_7.jpeg",
+        "image": "assets/images/slideshow/Slideshow_7.jpg",
         "caption": "If you ever doubt it, I choose you every time",
         "alt": "Romantic placeholder image 07",
         "fitMode": "contain",
@@ -75,7 +75,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/Slideshow_8.jpeg",
+        "image": "assets/images/slideshow/Slideshow_8.jpg",
         "caption": "I would do anything for you, buba",
         "alt": "Romantic placeholder image 08",
         "fitMode": "contain",
@@ -93,7 +93,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_10.jpeg",
+        "image": "assets/images/slideshow/SlideShow_10.jpg",
         "caption": "I am proud of you, for everything you are",
         "alt": "Romantic placeholder image 10",
         "fitMode": "contain",
@@ -102,7 +102,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_11.jpeg",
+        "image": "assets/images/slideshow/SlideShow_11.jpg",
         "caption": "Thank you for loving me the way you do",
         "alt": "Romantic placeholder image 11",
         "fitMode": "contain",
@@ -111,7 +111,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_12.jpeg",
+        "image": "assets/images/slideshow/SlideShow_12.jpg",
         "caption": "Thank you for being you, exactly you",
         "alt": "Romantic placeholder image 12",
         "fitMode": "contain",
@@ -120,7 +120,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_13.jpeg",
+        "image": "assets/images/slideshow/SlideShow_13.jpg",
         "caption": "I cannot wait to make more memories with you",
         "alt": "Romantic placeholder image 13",
         "fitMode": "contain",
@@ -129,7 +129,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_14.jpeg",
+        "image": "assets/images/slideshow/SlideShow_14.jpg",
         "caption": "You are my peace, my joy, and my home",
         "alt": "Romantic placeholder image 14",
         "fitMode": "contain",
@@ -138,7 +138,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_15.jpeg",
+        "image": "assets/images/slideshow/SlideShow_15.jpg",
         "caption": "I love you endlessly, buba",
         "alt": "Romantic placeholder image 15",
         "fitMode": "contain",
@@ -147,7 +147,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_16.jpeg",
+        "image": "assets/images/slideshow/SlideShow_16.jpg",
         "caption": "YOU ARE SUPER SEXY",
         "alt": "Romantic placeholder image 16",
         "fitMode": "contain",
@@ -266,7 +266,8 @@ const state = {
   riddleOpen: false,
   lastFocus: null,
   riddleEls: null,
-  content: null
+  content: null,
+  missingLabel: "Photo missing"
 };
 
 const elements = {
@@ -596,7 +597,7 @@ function applySlideStyles(img, slide) {
 
 function setPlaceholderVisible(slide, isVisible) {
   if (isVisible) {
-    elements.slidePlaceholder.textContent = slide.image;
+    elements.slidePlaceholder.textContent = state.missingLabel || "Photo missing";
     elements.slidePlaceholder.classList.remove("hidden");
   } else {
     elements.slidePlaceholder.classList.add("hidden");
@@ -645,11 +646,17 @@ function loadCurrentSlide(slide) {
     markPreloadStatus(slide.image, "error");
     setPlaceholderVisible(slide, true);
   };
+  if (slide.isMissing) {
+    setPlaceholderVisible(slide, true);
+    current.classList.add("is-visible");
+    return;
+  }
   applySlideStyles(current, slide);
   setPlaceholderVisible(slide, true);
   current.classList.add("is-visible");
   current.src = slide.image;
 }
+
 
 function stopSlideshow() {
   if (state.slideTimer) {
@@ -747,6 +754,13 @@ function loadNextSlide(content, nextIndex, slide) {
     swapSlides(nextIndex, slide, true);
     scheduleNext(content);
   };
+
+  if (slide.isMissing) {
+    state.waitingForSlide = false;
+    swapSlides(nextIndex, slide, true);
+    scheduleNext(content);
+    return;
+  }
 
   applySlideStyles(next, slide);
   next.classList.remove("is-visible");
@@ -1287,6 +1301,7 @@ function renderContent(content) {
   elements.projectDate.textContent = content.projectDate;
   elements.slideDots.setAttribute("aria-label", content.slideshow.progressAria);
   elements.continueBtn.textContent = content.slideshow.continueLabel;
+  state.missingLabel = content.slideshow.missingLabel || "Photo missing";
 
   elements.question.textContent = content.sceneB.question;
   elements.yesBtn.textContent = content.sceneB.yesLabel;

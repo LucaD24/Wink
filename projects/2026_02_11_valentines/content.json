@@ -180,7 +180,8 @@
         "focusY": 35,
         "zoom": 0.95
       }
-    ]
+    ],
+    "missingLabel": "Photo missing"
   },
   "sceneB": {
     "question": "Will you be my Valentine's?",
