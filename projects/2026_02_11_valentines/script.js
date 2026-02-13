@@ -621,7 +621,7 @@ function setPlaceholderVisible(slide, isVisible) {
   }
 }
 
-function swapSlides(nextIndex, slide) {
+function swapSlides(nextIndex, slide, showPlaceholder) {
   const current = slideLayers.current;
   const next = slideLayers.next;
 
@@ -638,8 +638,12 @@ function swapSlides(nextIndex, slide) {
   slideLayers.current = next;
   slideLayers.next = current;
 
-  setPlaceholderVisible(slide, false);
-  logDebug("Loaded and swapped", slide.image);
+  setPlaceholderVisible(slide, Boolean(showPlaceholder));
+  if (showPlaceholder) {
+    logDebug("Placeholder shown", slide.image);
+  } else {
+    logDebug("Loaded and swapped", slide.image);
+  }
 }
 
 function loadCurrentSlide(slide) {
@@ -688,18 +692,10 @@ function scheduleNext(content) {
 }
 
 function getNextIndex(currentIndex, slides) {
-  for (let i = currentIndex + 1; i < slides.length; i += 1) {
-    const slide = slides[i];
-    if (!slide || !slide.image) {
-      continue;
-    }
-    if (getPreloadStatus(slide.image) === "error") {
-      continue;
-    }
-    return i;
-  }
-  return slides.length;
+  const nextIndex = currentIndex + 1;
+  return nextIndex > slides.length ? slides.length : nextIndex;
 }
+
 
 function attemptAdvance(content) {
   if (state.waitingForSlide) {
@@ -712,12 +708,28 @@ function attemptAdvance(content) {
   if (nextIndex >= slides.length) {
     stopSlideshow();
     elements.continueBtn.classList.remove("hidden");
+    logDebug("Continue button shown");
     return;
   }
 
   const nextSlide = slides[nextIndex];
+  if (!nextSlide || !nextSlide.image) {
+    logDebug("Failed image and skipped", `missing slide ${nextIndex + 1}`);
+    swapSlides(nextIndex, { image: "", caption: "", alt: "" }, true);
+    scheduleNext(content);
+    return;
+  }
+
   preloadAround(nextIndex, slides);
   logDebug("Attempted next index", nextIndex);
+
+  if (getPreloadStatus(nextSlide.image) === "error") {
+    state.waitingForSlide = false;
+    swapSlides(nextIndex, nextSlide, true);
+    scheduleNext(content);
+    return;
+  }
+
   loadNextSlide(content, nextIndex, nextSlide);
 }
 
@@ -738,7 +750,7 @@ function loadNextSlide(content, nextIndex, slide) {
     resolved = true;
     markPreloadStatus(slide.image, "loaded");
     state.waitingForSlide = false;
-    swapSlides(nextIndex, slide);
+    swapSlides(nextIndex, slide, false);
     scheduleNext(content);
   };
 
@@ -749,8 +761,9 @@ function loadNextSlide(content, nextIndex, slide) {
     resolved = true;
     markPreloadStatus(slide.image, "error");
     state.waitingForSlide = false;
-    logDebug("Failed image and skipped", slide.image);
-    attemptAdvance(content);
+    logDebug("Load failure", slide.image);
+    swapSlides(nextIndex, slide, true);
+    scheduleNext(content);
   };
 
   applySlideStyles(next, slide);
@@ -771,8 +784,9 @@ function loadNextSlide(content, nextIndex, slide) {
         resolved = true;
         markPreloadStatus(slide.image, "error");
         state.waitingForSlide = false;
-        logDebug("Failed image and skipped", slide.image);
-        attemptAdvance(content);
+        logDebug("Load failure", slide.image);
+        swapSlides(nextIndex, slide, true);
+        scheduleNext(content);
       }
       return;
     }
