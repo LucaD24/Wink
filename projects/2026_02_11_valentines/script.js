@@ -273,6 +273,10 @@ const state = {
   scene: "intro",
   slideIndex: 0,
   slideTimer: null,
+  slideWaitTimer: null,
+  waitingForSlide: false,
+  slideToken: 0,
+  activeSlideImage: null,
   maybeIndex: 0,
   eggTimer: null,
   reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -314,6 +318,23 @@ const elements = {
 };
 
 const effectControllers = { confetti: null };
+
+const preloadState = {
+  status: new Map(),
+  pending: new Set(),
+  queue: [],
+  active: 0,
+  concurrency: 4,
+  images: new Map()
+};
+
+const slideLayers = {
+  current: elements.slideImage,
+  next: null
+};
+
+const PRELOAD_WAIT_MS = 200;
+const PRELOAD_MAX_WAIT_MS = 5000;
 
 async function loadContent() {
   try {
@@ -466,20 +487,102 @@ function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-// Render a slide and handle missing images with a placeholder card.
-function renderSlide(slide) {
-  if (!slide) {
+
+function ensureSlideLayers() {
+  if (slideLayers.next) {
     return;
   }
+  const nextImg = document.createElement("img");
+  nextImg.id = "slide-image-next";
+  nextImg.alt = "";
+  nextImg.setAttribute("aria-hidden", "true");
+  elements.slideImage.setAttribute("aria-hidden", "false");
+  elements.slideFrame.insertBefore(nextImg, elements.slidePlaceholder);
+  slideLayers.next = nextImg;
+}
 
+function getPreloadStatus(url) {
+  return preloadState.status.get(url);
+}
+
+function markPreloadStatus(url, status) {
+  preloadState.status.set(url, status);
+}
+
+function enqueuePreload(url, priority = false) {
+  if (!url) {
+    return;
+  }
+  const status = getPreloadStatus(url);
+  if (status === "loaded" || status === "error" || preloadState.pending.has(url)) {
+    return;
+  }
+  preloadState.pending.add(url);
+  if (priority) {
+    preloadState.queue.unshift(url);
+  } else {
+    preloadState.queue.push(url);
+  }
+  processPreloadQueue();
+}
+
+function processPreloadQueue() {
+  while (preloadState.active < preloadState.concurrency && preloadState.queue.length) {
+    const url = preloadState.queue.shift();
+    if (!url || getPreloadStatus(url) || !preloadState.pending.has(url)) {
+      preloadState.pending.delete(url);
+      continue;
+    }
+    preloadState.active += 1;
+    logDebug("Preload start", url);
+    const img = new Image();
+    preloadState.images.set(url, img);
+    img.onload = () => {
+      preloadState.active -= 1;
+      preloadState.pending.delete(url);
+      markPreloadStatus(url, "loaded");
+      logDebug("Preload success", url);
+      processPreloadQueue();
+    };
+    img.onerror = () => {
+      preloadState.active -= 1;
+      preloadState.pending.delete(url);
+      markPreloadStatus(url, "error");
+      logDebug("Preload error", url);
+      processPreloadQueue();
+    };
+    img.src = url;
+  }
+}
+
+function preloadImages(urls, priority = false) {
+  urls.forEach((url) => enqueuePreload(url, priority));
+}
+
+function preloadAround(index, slides) {
+  const urls = [];
+  for (let i = 0; i < 3; i += 1) {
+    const slide = slides[index + i];
+    if (slide && slide.image) {
+      urls.push(slide.image);
+    }
+  }
+  preloadImages(urls, true);
+}
+
+function preloadAll(slides) {
+  const urls = slides.map((slide) => slide.image).filter(Boolean);
+  preloadImages(urls, false);
+}
+
+function setSlideCaption(slide) {
   const caption = (slide.caption || "").trim();
   elements.slideCaption.textContent = caption;
   elements.slideCaption.classList.toggle("is-empty", caption.length === 0);
+}
 
-  elements.slideImage.alt = slide.alt || "";
-  elements.slideImage.classList.remove("is-visible");
-  elements.slidePlaceholder.classList.add("hidden");
-
+function applySlideStyles(img, slide) {
+  img.alt = slide.alt || "";
   const fitMode = slide.fitMode || "cover";
   const focusX = clampFocus(slide.focusX, 50);
   const focusY = clampFocus(slide.focusY, 35);
@@ -488,25 +591,106 @@ function renderSlide(slide) {
   const positionX = isContain ? 50 : focusX;
   const positionY = isContain ? 50 : focusY;
 
-  // Slide framing comes from content.json fitMode and focus values.
-  elements.slideImage.style.objectFit = isContain ? "contain" : "cover";
-  elements.slideImage.style.objectPosition = `${positionX}% ${positionY}%`;
-  // Zoom and anchor point also come from content.json per slide settings.
-  elements.slideImage.style.transformOrigin = `${positionX}% ${positionY}%`;
-  elements.slideImage.style.transform = `scale(${zoom})`;
+  img.style.objectFit = isContain ? "contain" : "cover";
+  img.style.objectPosition = `${positionX}% ${positionY}%`;
+  img.style.transformOrigin = `${positionX}% ${positionY}%`;
+  img.style.transform = `scale(${zoom})`;
   elements.slideFrame.classList.toggle("is-contain", isContain);
+}
 
-  elements.slideImage.onload = () => {
-    elements.slideImage.classList.add("is-visible");
-  };
-
-  elements.slideImage.onerror = () => {
-    elements.slideImage.classList.remove("is-visible");
+function setPlaceholder(slide, isVisible) {
+  if (isVisible) {
     elements.slidePlaceholder.textContent = slide.image;
     elements.slidePlaceholder.classList.remove("hidden");
+  } else {
+    elements.slidePlaceholder.classList.add("hidden");
+  }
+}
+
+function commitSlide(slideIndex, slide, showPlaceholder) {
+  setSlideCaption(slide);
+  updateDots(state.totalSlides, slideIndex);
+  state.slideIndex = slideIndex;
+  state.activeSlideImage = slide.image;
+
+  if (showPlaceholder) {
+    setPlaceholder(slide, true);
+  } else {
+    setPlaceholder(slide, false);
+  }
+
+  const current = slideLayers.current;
+  const next = slideLayers.next;
+  next.classList.add("is-visible");
+  current.classList.remove("is-visible");
+  next.setAttribute("aria-hidden", "false");
+  current.setAttribute("aria-hidden", "true");
+  slideLayers.current = next;
+  slideLayers.next = current;
+}
+
+function transitionToSlide(slideIndex, slide, options = {}) {
+  ensureSlideLayers();
+  const force = Boolean(options.force);
+  const current = slideLayers.current;
+  const next = slideLayers.next;
+  const token = state.slideToken + 1;
+  state.slideToken = token;
+
+  let committed = false;
+
+  const finalize = (showPlaceholder) => {
+    if (committed) {
+      return;
+    }
+    committed = true;
+    commitSlide(slideIndex, slide, showPlaceholder);
   };
 
-  elements.slideImage.src = slide.image;
+  const handleLoaded = () => {
+    markPreloadStatus(slide.image, "loaded");
+    if (!committed) {
+      finalize(false);
+      return;
+    }
+    if (state.activeSlideImage === slide.image) {
+      setPlaceholder(slide, false);
+    }
+  };
+
+  const handleError = () => {
+    markPreloadStatus(slide.image, "error");
+    if (!committed) {
+      finalize(true);
+      return;
+    }
+    if (state.activeSlideImage === slide.image) {
+      setPlaceholder(slide, true);
+    }
+  };
+
+  applySlideStyles(next, slide);
+  next.onload = () => {
+    if (state.slideToken !== token) {
+      return;
+    }
+    handleLoaded();
+  };
+  next.onerror = () => {
+    if (state.slideToken !== token) {
+      return;
+    }
+    handleError();
+  };
+  next.src = slide.image;
+
+  if (force) {
+    finalize(true);
+  } else if (next.complete && next.naturalWidth > 0) {
+    handleLoaded();
+  }
+
+  current.classList.add("is-visible");
 }
 
 function updateDots(total, current) {
@@ -523,33 +707,112 @@ function updateDots(total, current) {
 
 function stopSlideshow() {
   if (state.slideTimer) {
-    clearInterval(state.slideTimer);
+    clearTimeout(state.slideTimer);
     state.slideTimer = null;
   }
+  if (state.slideWaitTimer) {
+    clearTimeout(state.slideWaitTimer);
+    state.slideWaitTimer = null;
+  }
+  state.waitingForSlide = false;
+}
+
+function scheduleNext(content) {
+  stopSlideshow();
+  state.slideTimer = setTimeout(() => {
+    attemptAdvance(content);
+  }, content.timings.slideDurationMs);
+}
+
+function getNextIndex(current, slides) {
+  let nextIndex = current + 1;
+  while (nextIndex < slides.length) {
+    const slide = slides[nextIndex];
+    if (!slide || !slide.image) {
+      nextIndex += 1;
+      continue;
+    }
+    if (getPreloadStatus(slide.image) === "error") {
+      nextIndex += 1;
+      continue;
+    }
+    return nextIndex;
+  }
+  return slides.length;
+}
+
+function attemptAdvance(content, waitStart = null) {
+  if (state.waitingForSlide && waitStart === null) {
+    return;
+  }
+
+  const slides = content.slideshow.slides;
+  const nextIndex = getNextIndex(state.slideIndex, slides);
+
+  if (nextIndex >= slides.length) {
+    stopSlideshow();
+    elements.continueBtn.classList.remove("hidden");
+    return;
+  }
+
+  const nextSlide = slides[nextIndex];
+  preloadAround(nextIndex, slides);
+  logDebug("Slide advance attempt", nextSlide.image);
+
+  if (getPreloadStatus(nextSlide.image) === "loaded") {
+    state.waitingForSlide = false;
+    transitionToSlide(nextIndex, nextSlide, { force: false });
+    scheduleNext(content);
+    return;
+  }
+
+  if (getPreloadStatus(nextSlide.image) === "error") {
+    state.slideIndex = nextIndex;
+    state.waitingForSlide = false;
+    attemptAdvance(content);
+    return;
+  }
+
+  if (waitStart === null) {
+    state.waitingForSlide = true;
+    waitStart = Date.now();
+  }
+
+  if (Date.now() - waitStart >= PRELOAD_MAX_WAIT_MS) {
+    state.waitingForSlide = false;
+    transitionToSlide(nextIndex, nextSlide, { force: true });
+    scheduleNext(content);
+    return;
+  }
+
+  state.slideWaitTimer = setTimeout(() => {
+    attemptAdvance(content, waitStart);
+  }, PRELOAD_WAIT_MS);
 }
 
 function startSlideshow(content) {
-  // Slide timing is read from content.json timings.slideDurationMs.
-  const slideDurationMs = content.timings.slideDurationMs;
   const { slides } = content.slideshow;
-
+  state.totalSlides = slides.length;
   state.slideIndex = 0;
+  state.activeSlideImage = slides[0]?.image || null;
   elements.continueBtn.classList.add("hidden");
-  renderSlide(slides[state.slideIndex]);
-  updateDots(slides.length, state.slideIndex);
+  ensureSlideLayers();
 
-  stopSlideshow();
+  const firstSlide = slides[0];
+  if (firstSlide) {
+    applySlideStyles(slideLayers.current, firstSlide);
+    slideLayers.current.src = firstSlide.image;
+    slideLayers.current.classList.add("is-visible");
+    slideLayers.current.setAttribute("aria-hidden", "false");
+    slideLayers.next.classList.remove("is-visible");
+    slideLayers.next.setAttribute("aria-hidden", "true");
+    setSlideCaption(firstSlide);
+    updateDots(slides.length, 0);
+  }
 
-  state.slideTimer = setInterval(() => {
-    if (state.slideIndex < slides.length - 1) {
-      state.slideIndex += 1;
-      renderSlide(slides[state.slideIndex]);
-      updateDots(slides.length, state.slideIndex);
-    } else {
-      stopSlideshow();
-      elements.continueBtn.classList.remove("hidden");
-    }
-  }, slideDurationMs);
+  preloadAround(0, slides);
+  preloadAll(slides);
+  scheduleNext(content);
 }
 
 function renderYesImages(images) {
