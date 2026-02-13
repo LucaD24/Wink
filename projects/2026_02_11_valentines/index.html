@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <button class="audio-toggle hidden" id="audio-toggle" aria-pressed="false"></button>
+
+      <section class="scene scene-intro romance-scene is-active" data-scene="intro" aria-hidden="false">
+        <div class="romance-layer" aria-hidden="true"></div>
+        <div class="floaters" aria-hidden="true">
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+        </div>
+        <div class="scene-frame scene-frame--slideshow">
+          <div class="slideshow" aria-live="polite">
+            <div class="slide-frame">
+              <img id="slide-image" alt="" />
+              <div class="image-placeholder hidden" id="slide-placeholder" aria-hidden="true"></div>
+            </div>
+            <div class="slide-caption" id="slide-caption"></div>
+            <div class="slide-controls">
+              <div class="dots" id="slide-dots" aria-label=""></div>
+            </div>
+            <button class="primary large hidden" id="continue-btn"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene scene-question romance-scene" data-scene="question" aria-hidden="true">
+        <div class="romance-layer" aria-hidden="true"></div>
+        <div class="floaters" aria-hidden="true">
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+        </div>
+        <div class="scene-frame">
+          <div class="card romance-card">
+            <p class="eyebrow" id="project-date"></p>
+            <h1 id="question"></h1>
+            <div class="button-row">
+              <button class="primary" data-action="yes" id="yes-btn"></button>
+              <button class="secondary" data-action="no" id="no-btn"></button>
+              <button class="ghost" data-action="maybe" id="maybe-btn"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene scene-yes romance-scene" data-scene="yes" aria-hidden="true">
+        <div class="romance-layer" aria-hidden="true"></div>
+        <div class="floaters" aria-hidden="true">
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+        </div>
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div class="scene-frame">
+          <div class="card wide romance-card">
+            <h2 id="yes-headline"></h2>
+            <button class="primary small yes-riddle" id="yes-riddle-btn"></button>
+            <div class="yes-images" id="yes-images"></div>
+            <div class="yes-lines" id="yes-lines"></div>
+            <p class="yes-joke" id="peanut-line"></p>
+            <button class="ghost small" id="restart-btn"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene scene-no romance-scene" data-scene="no" aria-hidden="true">
+        <div class="romance-layer" aria-hidden="true"></div>
+        <div class="floaters" aria-hidden="true">
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+        </div>
+        <div class="scene-frame">
+          <div class="card romance-card">
+            <div class="crying-emoji" id="crying-emoji"></div>
+            <p class="no-text" id="no-text"></p>
+            <button class="primary" id="try-again-btn"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene scene-maybe romance-scene" data-scene="maybe" aria-hidden="true">
+        <div class="romance-layer" aria-hidden="true"></div>
+        <div class="floaters" aria-hidden="true">
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+          <span class="floater"></span>
+        </div>
+        <div class="scene-frame">
+          <div class="card romance-card">
+            <h2 id="maybe-text"></h2>
+            <div class="button-row">
+              <button class="primary" id="maybe-yes-btn"></button>
+              <button class="secondary" id="maybe-still-btn"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="egg hidden" id="egg" role="status" aria-live="polite">
+        <span class="egg-heart" aria-hidden="true"></span>
+        <span id="egg-message"></span>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

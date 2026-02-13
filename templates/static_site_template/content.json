@@ -1,0 +1,8 @@
+{
+  "projectTitle": "__PROJECT_TITLE__",
+  "projectDate": "__PROJECT_DATE__",
+  "heroTitle": "A tiny site for a tiny moment",
+  "heroSubtitle": "Update this text to match your idea",
+  "bodyText": "This project loads all text from content.json and stays fully static.",
+  "ctaLabel": "Make it yours"
+}

@@ -1,0 +1,268 @@
+{
+  "projectTitle": "Valentines for Tara",
+  "projectDate": "February 14, 2026",
+  "timings": {
+    "slideDurationMs": 3500,
+    "slideTransitionMs": 600
+  },
+  "slideshow": {
+    "progressAria": "Slide progress",
+    "continueLabel": "Press Here to continue",
+    "slides": [
+      {
+        "image": "assets/images/slideshow/SlideShow_1.JPG",
+        "caption": "Hey buba",
+        "alt": "Romantic placeholder image 01",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_2.JPG",
+        "caption": "Just a reminder that you are so special to me",
+        "alt": "Romantic placeholder image 02",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_3.JPG",
+        "caption": "You make my days softer and my smile bigger",
+        "alt": "Romantic placeholder image 03",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_4.JPG",
+        "caption": "I love you more than you probably realise",
+        "alt": "Romantic placeholder image 04",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_5.DNG",
+        "caption": "I am grateful for you, always",
+        "alt": "Romantic placeholder image 05",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_6.heic",
+        "caption": "You are my favourite person and my safest place",
+        "alt": "Romantic placeholder image 06",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/Slideshow_7.HEIC",
+        "caption": "If you ever doubt it, I choose you every time",
+        "alt": "Romantic placeholder image 07",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/Slideshow_8.HEIC",
+        "caption": "I would do anything for you, buba",
+        "alt": "Romantic placeholder image 08",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_9.JPG",
+        "caption": "Your heart is pure and your soul is beautiful",
+        "alt": "Romantic placeholder image 09",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_10.HEIC",
+        "caption": "I am proud of you, for everything you are",
+        "alt": "Romantic placeholder image 10",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_11.HEIC",
+        "caption": "Thank you for loving me the way you do",
+        "alt": "Romantic placeholder image 11",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_12.HEIC",
+        "caption": "Thank you for being you, exactly you",
+        "alt": "Romantic placeholder image 12",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_13.DNG",
+        "caption": "I cannot wait to make more memories with you",
+        "alt": "Romantic placeholder image 13",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_14.HEIC",
+        "caption": "You are my peace, my joy, and my home",
+        "alt": "Romantic placeholder image 14",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_15.HEIC",
+        "caption": "I love you endlessly, buba",
+        "alt": "Romantic placeholder image 15",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_16.heic",
+        "caption": "YOU ARE SUPER SEXY",
+        "alt": "Romantic placeholder image 16",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_17.JPG",
+        "caption": "YOU SMELL SUPER GOOD TOO",
+        "alt": "Romantic placeholder image 17",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_18.JPG",
+        "caption": "I R8 you A8 on 8",
+        "alt": "Romantic placeholder image 18",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_19.HEIC",
+        "caption": "",
+        "alt": "Romantic placeholder image 19",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_20.HEIC",
+        "caption": "",
+        "alt": "Romantic placeholder image 20",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      },
+      {
+        "image": "assets/images/slideshow/SlideShow_21.DNG",
+        "caption": "Now press the button, I have a question for you",
+        "alt": "Romantic placeholder image 21",
+        "fitMode": "contain",
+        "focusX": 50,
+        "focusY": 35,
+        "zoom": 0.95
+      }
+    ]
+  },
+  "sceneB": {
+    "question": "Will you be my Valentine's?",
+    "yesLabel": "Yes",
+    "noLabel": "No",
+    "maybeLabel": "Maybe"
+  },
+  "sceneC": {
+    "headline": "You said yes",
+    "lines": [
+      "Every day with you feels like a gift"
+    ],
+    "peanutLine": "I am your PEANUT",
+    "images": [
+      {
+        "src": "assets/images/yes/Yes.png",
+        "alt": "Yes moment image"
+      }
+    ],
+    "restartLabel": "Start over",
+    "riddleTriggerLabel": "hmm"
+  },
+  "sceneD": {
+    "emoji": "\ud83d\ude2d",
+    "text": "I am dead now",
+    "buttonLabel": "Try again"
+  },
+  "sceneE": {
+    "prompt": "Are youuuuuuuu sure? That is not a real answer!!!",
+    "variations": [
+      "Think about all the snacks we could share",
+      "I can wait but a yes would sparkle",
+      "Maybe is cute but yes is iconic",
+      "I will trade a joke for a yes"
+    ],
+    "yesLabel": "Ok fine: Yes",
+    "maybeLabel": "Still Maybe"
+  },
+  "easterEgg": {
+    "trigger": "tara",
+    "message": "Want to hear a secret??? Tara, you are my favorite!"
+  },
+  "audio": {
+    "enableAudio": true,
+    "file": "assets/audio/save_me.mp3",
+    "toggleOnLabel": "Audio on",
+    "toggleOffLabel": "Audio off",
+    "ariaLabel": "Toggle audio"
+  },
+  "effects": {
+    "confetti": {
+      "enabled": true,
+      "spawnPerSecond": 10,
+      "maxOnScreen": 50,
+      "fallDurationMsMin": 4200,
+      "fallDurationMsMax": 6800,
+      "sizePxMin": 6,
+      "sizePxMax": 14
+    }
+  },
+  "yesRiddle": {
+    "enabled": true,
+    "title": "A tiny clue for you, buba",
+    "riddle": "I am waiting where your hands like to dance\nI rest on a little mountain of keys\nAnd I am tucked under the thing that wakes up to shine\nGo have a peek, buba",
+    "closeLabel": "Close"
+  }
+}
