@@ -48,7 +48,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_5.DNG",
+        "image": "assets/images/slideshow/SlideShow_5.jpeg",
         "caption": "I am grateful for you, always",
         "alt": "Romantic placeholder image 05",
         "fitMode": "contain",
@@ -57,7 +57,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_6.heic",
+        "image": "assets/images/slideshow/SlideShow_6.jpeg",
         "caption": "You are my favourite person and my safest place",
         "alt": "Romantic placeholder image 06",
         "fitMode": "contain",
@@ -66,7 +66,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/Slideshow_7.HEIC",
+        "image": "assets/images/slideshow/Slideshow_7.jpeg",
         "caption": "If you ever doubt it, I choose you every time",
         "alt": "Romantic placeholder image 07",
         "fitMode": "contain",
@@ -75,7 +75,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/Slideshow_8.HEIC",
+        "image": "assets/images/slideshow/Slideshow_8.jpeg",
         "caption": "I would do anything for you, buba",
         "alt": "Romantic placeholder image 08",
         "fitMode": "contain",
@@ -93,7 +93,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_10.HEIC",
+        "image": "assets/images/slideshow/SlideShow_10.jpeg",
         "caption": "I am proud of you, for everything you are",
         "alt": "Romantic placeholder image 10",
         "fitMode": "contain",
@@ -102,7 +102,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_11.HEIC",
+        "image": "assets/images/slideshow/SlideShow_11.jpeg",
         "caption": "Thank you for loving me the way you do",
         "alt": "Romantic placeholder image 11",
         "fitMode": "contain",
@@ -111,7 +111,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_12.HEIC",
+        "image": "assets/images/slideshow/SlideShow_12.jpeg",
         "caption": "Thank you for being you, exactly you",
         "alt": "Romantic placeholder image 12",
         "fitMode": "contain",
@@ -120,7 +120,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_13.DNG",
+        "image": "assets/images/slideshow/SlideShow_13.jpeg",
         "caption": "I cannot wait to make more memories with you",
         "alt": "Romantic placeholder image 13",
         "fitMode": "contain",
@@ -129,7 +129,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_14.HEIC",
+        "image": "assets/images/slideshow/SlideShow_14.jpeg",
         "caption": "You are my peace, my joy, and my home",
         "alt": "Romantic placeholder image 14",
         "fitMode": "contain",
@@ -138,7 +138,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_15.HEIC",
+        "image": "assets/images/slideshow/SlideShow_15.jpeg",
         "caption": "I love you endlessly, buba",
         "alt": "Romantic placeholder image 15",
         "fitMode": "contain",
@@ -147,7 +147,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_16.heic",
+        "image": "assets/images/slideshow/SlideShow_16.jpeg",
         "caption": "YOU ARE SUPER SEXY",
         "alt": "Romantic placeholder image 16",
         "fitMode": "contain",
