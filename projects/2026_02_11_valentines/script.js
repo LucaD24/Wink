@@ -334,7 +334,7 @@ const slideLayers = {
 };
 
 const PRELOAD_WAIT_MS = 200;
-const PRELOAD_MAX_WAIT_MS = 5000;
+const PRELOAD_MAX_WAIT_MS = 8000;
 
 async function loadContent() {
   try {
@@ -488,6 +488,7 @@ function randomBetween(min, max) {
 }
 
 
+
 function ensureSlideLayers() {
   if (slideLayers.next) {
     return;
@@ -581,6 +582,19 @@ function setSlideCaption(slide) {
   elements.slideCaption.classList.toggle("is-empty", caption.length === 0);
 }
 
+
+function updateDots(total, current) {
+  elements.slideDots.innerHTML = "";
+  for (let i = 0; i < total; i += 1) {
+    const dot = document.createElement("div");
+    dot.className = "dot";
+    if (i === current) {
+      dot.classList.add("is-active");
+    }
+    elements.slideDots.appendChild(dot);
+  }
+}
+
 function applySlideStyles(img, slide) {
   img.alt = slide.alt || "";
   const fitMode = slide.fitMode || "cover";
@@ -598,7 +612,7 @@ function applySlideStyles(img, slide) {
   elements.slideFrame.classList.toggle("is-contain", isContain);
 }
 
-function setPlaceholder(slide, isVisible) {
+function setPlaceholderVisible(slide, isVisible) {
   if (isVisible) {
     elements.slidePlaceholder.textContent = slide.image;
     elements.slidePlaceholder.classList.remove("hidden");
@@ -607,102 +621,48 @@ function setPlaceholder(slide, isVisible) {
   }
 }
 
-function commitSlide(slideIndex, slide, showPlaceholder) {
+function swapSlides(nextIndex, slide) {
+  const current = slideLayers.current;
+  const next = slideLayers.next;
+
   setSlideCaption(slide);
-  updateDots(state.totalSlides, slideIndex);
-  state.slideIndex = slideIndex;
+  updateDots(state.totalSlides, nextIndex);
+  state.slideIndex = nextIndex;
   state.activeSlideImage = slide.image;
 
-  if (showPlaceholder) {
-    setPlaceholder(slide, true);
-  } else {
-    setPlaceholder(slide, false);
-  }
-
-  const current = slideLayers.current;
-  const next = slideLayers.next;
   next.classList.add("is-visible");
-  current.classList.remove("is-visible");
   next.setAttribute("aria-hidden", "false");
+  current.classList.remove("is-visible");
   current.setAttribute("aria-hidden", "true");
+
   slideLayers.current = next;
   slideLayers.next = current;
+
+  setPlaceholderVisible(slide, false);
+  logDebug("Loaded and swapped", slide.image);
 }
 
-function transitionToSlide(slideIndex, slide, options = {}) {
-  ensureSlideLayers();
-  const force = Boolean(options.force);
+function loadCurrentSlide(slide) {
   const current = slideLayers.current;
-  const next = slideLayers.next;
-  const token = state.slideToken + 1;
-  state.slideToken = token;
-
-  let committed = false;
-
-  const finalize = (showPlaceholder) => {
-    if (committed) {
+  current.onload = () => {
+    if (state.activeSlideImage !== slide.image) {
       return;
     }
-    committed = true;
-    commitSlide(slideIndex, slide, showPlaceholder);
-  };
-
-  const handleLoaded = () => {
     markPreloadStatus(slide.image, "loaded");
-    if (!committed) {
-      finalize(false);
+    current.classList.add("is-visible");
+    setPlaceholderVisible(slide, false);
+  };
+  current.onerror = () => {
+    if (state.activeSlideImage !== slide.image) {
       return;
     }
-    if (state.activeSlideImage === slide.image) {
-      setPlaceholder(slide, false);
-    }
-  };
-
-  const handleError = () => {
     markPreloadStatus(slide.image, "error");
-    if (!committed) {
-      finalize(true);
-      return;
-    }
-    if (state.activeSlideImage === slide.image) {
-      setPlaceholder(slide, true);
-    }
+    setPlaceholderVisible(slide, true);
   };
-
-  applySlideStyles(next, slide);
-  next.onload = () => {
-    if (state.slideToken !== token) {
-      return;
-    }
-    handleLoaded();
-  };
-  next.onerror = () => {
-    if (state.slideToken !== token) {
-      return;
-    }
-    handleError();
-  };
-  next.src = slide.image;
-
-  if (force) {
-    finalize(true);
-  } else if (next.complete && next.naturalWidth > 0) {
-    handleLoaded();
-  }
-
+  applySlideStyles(current, slide);
+  setPlaceholderVisible(slide, true);
   current.classList.add("is-visible");
-}
-
-function updateDots(total, current) {
-  elements.slideDots.innerHTML = "";
-  for (let i = 0; i < total; i += 1) {
-    const dot = document.createElement("div");
-    dot.className = "dot";
-    if (i === current) {
-      dot.classList.add("is-active");
-    }
-    elements.slideDots.appendChild(dot);
-  }
+  current.src = slide.image;
 }
 
 function stopSlideshow() {
@@ -715,34 +675,34 @@ function stopSlideshow() {
     state.slideWaitTimer = null;
   }
   state.waitingForSlide = false;
+  state.slideToken += 1;
 }
 
 function scheduleNext(content) {
-  stopSlideshow();
+  if (state.slideTimer) {
+    clearTimeout(state.slideTimer);
+  }
   state.slideTimer = setTimeout(() => {
     attemptAdvance(content);
   }, content.timings.slideDurationMs);
 }
 
-function getNextIndex(current, slides) {
-  let nextIndex = current + 1;
-  while (nextIndex < slides.length) {
-    const slide = slides[nextIndex];
+function getNextIndex(currentIndex, slides) {
+  for (let i = currentIndex + 1; i < slides.length; i += 1) {
+    const slide = slides[i];
     if (!slide || !slide.image) {
-      nextIndex += 1;
       continue;
     }
     if (getPreloadStatus(slide.image) === "error") {
-      nextIndex += 1;
       continue;
     }
-    return nextIndex;
+    return i;
   }
   return slides.length;
 }
 
-function attemptAdvance(content, waitStart = null) {
-  if (state.waitingForSlide && waitStart === null) {
+function attemptAdvance(content) {
+  if (state.waitingForSlide) {
     return;
   }
 
@@ -757,41 +717,75 @@ function attemptAdvance(content, waitStart = null) {
 
   const nextSlide = slides[nextIndex];
   preloadAround(nextIndex, slides);
-  logDebug("Slide advance attempt", nextSlide.image);
+  logDebug("Attempted next index", nextIndex);
+  loadNextSlide(content, nextIndex, nextSlide);
+}
 
-  if (getPreloadStatus(nextSlide.image) === "loaded") {
+function loadNextSlide(content, nextIndex, slide) {
+  ensureSlideLayers();
+  const next = slideLayers.next;
+  const token = state.slideToken + 1;
+  state.slideToken = token;
+  state.waitingForSlide = true;
+
+  let resolved = false;
+  const waitStart = Date.now();
+
+  next.onload = () => {
+    if (resolved || state.slideToken !== token) {
+      return;
+    }
+    resolved = true;
+    markPreloadStatus(slide.image, "loaded");
     state.waitingForSlide = false;
-    transitionToSlide(nextIndex, nextSlide, { force: false });
+    swapSlides(nextIndex, slide);
     scheduleNext(content);
-    return;
-  }
+  };
 
-  if (getPreloadStatus(nextSlide.image) === "error") {
-    state.slideIndex = nextIndex;
+  next.onerror = () => {
+    if (resolved || state.slideToken !== token) {
+      return;
+    }
+    resolved = true;
+    markPreloadStatus(slide.image, "error");
     state.waitingForSlide = false;
+    logDebug("Failed image and skipped", slide.image);
     attemptAdvance(content);
-    return;
-  }
+  };
 
-  if (waitStart === null) {
-    state.waitingForSlide = true;
-    waitStart = Date.now();
-  }
+  applySlideStyles(next, slide);
+  next.classList.remove("is-visible");
+  next.setAttribute("aria-hidden", "true");
+  next.src = slide.image;
 
-  if (Date.now() - waitStart >= PRELOAD_MAX_WAIT_MS) {
-    state.waitingForSlide = false;
-    transitionToSlide(nextIndex, nextSlide, { force: true });
-    scheduleNext(content);
-    return;
-  }
+  const pollReady = () => {
+    if (resolved || state.slideToken !== token) {
+      return;
+    }
+    if (next.complete && next.naturalWidth > 0) {
+      next.onload();
+      return;
+    }
+    if (Date.now() - waitStart >= PRELOAD_MAX_WAIT_MS) {
+      if (!resolved) {
+        resolved = true;
+        markPreloadStatus(slide.image, "error");
+        state.waitingForSlide = false;
+        logDebug("Failed image and skipped", slide.image);
+        attemptAdvance(content);
+      }
+      return;
+    }
+    logDebug("Waiting for load", slide.image);
+    state.slideWaitTimer = setTimeout(pollReady, PRELOAD_WAIT_MS);
+  };
 
-  state.slideWaitTimer = setTimeout(() => {
-    attemptAdvance(content, waitStart);
-  }, PRELOAD_WAIT_MS);
+  state.slideWaitTimer = setTimeout(pollReady, PRELOAD_WAIT_MS);
 }
 
 function startSlideshow(content) {
   const { slides } = content.slideshow;
+  stopSlideshow();
   state.totalSlides = slides.length;
   state.slideIndex = 0;
   state.activeSlideImage = slides[0]?.image || null;
@@ -800,12 +794,7 @@ function startSlideshow(content) {
 
   const firstSlide = slides[0];
   if (firstSlide) {
-    applySlideStyles(slideLayers.current, firstSlide);
-    slideLayers.current.src = firstSlide.image;
-    slideLayers.current.classList.add("is-visible");
-    slideLayers.current.setAttribute("aria-hidden", "false");
-    slideLayers.next.classList.remove("is-visible");
-    slideLayers.next.setAttribute("aria-hidden", "true");
+    loadCurrentSlide(firstSlide);
     setSlideCaption(firstSlide);
     updateDots(slides.length, 0);
   }
