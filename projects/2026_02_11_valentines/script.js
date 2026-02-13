@@ -174,7 +174,7 @@ const fallbackContent = {
         "zoom": 0.95
       },
       {
-        "image": "assets/images/slideshow/SlideShow_19.HEIC",
+        "image": "assets/images/slideshow/SlideShow_19.JPG",
         "caption": "Now press the button, I have a question for you",
         "alt": "Romantic placeholder image 19",
         "fitMode": "contain",
